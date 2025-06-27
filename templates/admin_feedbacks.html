@@ -48,9 +48,11 @@
 
         <!-- Sort Buttons -->
         <div class="header-actions" style="margin-bottom: 20px;">
-            <a href="{{ url_for('all_feedbacks', sort='time') }}" class="btn {% if sort_by == 'time' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Time</a>
-            <a href="{{ url_for('all_feedbacks', sort='student') }}" class="btn {% if sort_by == 'student' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Student</a>
-            <a href="{{ url_for('all_feedbacks', sort='teacher') }}" class="btn {% if sort_by == 'teacher' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Teacher</a>
+        <a href="{{ url_for('all_feedbacks', sort='time') }}" class="btn {% if sort_by == 'time' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Time</a>
+        <a href="{{ url_for('all_feedbacks', sort='student') }}" class="btn {% if sort_by == 'student' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Student</a>
+        <a href="{{ url_for('all_feedbacks', sort='teacher') }}" class="btn {% if sort_by == 'teacher' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Teacher</a>
+        <a href="{{ url_for('all_feedbacks', sort='phase') }}" class="btn {% if sort_by == 'phase' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Phase</a>
+        <a href="{{ url_for('all_feedbacks', sort='class') }}" class="btn {% if sort_by == 'class' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Class</a>
         </div>
 
         <!-- Dropdown Filters -->
@@ -67,6 +69,7 @@
                 {% endfor %}
             </select>
         </form>
+
         {% elif sort_by == 'teacher' %}
         <form method="get" class="form-group" style="margin-bottom: 20px;">
             <input type="hidden" name="sort" value="teacher">
@@ -77,6 +80,30 @@
                 <option value="{{ code }}" {% if filter_value == code %}selected{% endif %}>
                     {{ teacher.name }} ({{ code }})
                 </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        {% elif sort_by == 'phase' %}
+        <form method="get" class="form-group" style="margin-bottom: 20px;">
+            <input type="hidden" name="sort" value="phase">
+            <label for="filter">Select Phase:</label>
+            <select name="filter" onchange="this.form.submit()" style="width: 100%; padding: 10px; border-radius: 8px;">
+                <option value="">-- All Phases --</option>
+                {% for phase in all_phases %}
+                <option value="{{ phase }}" {% if filter_value == phase %}selected{% endif %}>{{ phase }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        {% elif sort_by == 'class' %}
+        <form method="get" class="form-group" style="margin-bottom: 20px;">
+            <input type="hidden" name="sort" value="class">
+            <label for="filter">Select Class:</label>
+            <select name="filter" onchange="this.form.submit()" style="width: 100%; padding: 10px; border-radius: 8px;">
+                <option value="">-- All Classes --</option>
+                {% for cls in all_classes %}
+                <option value="{{ cls }}" {% if filter_value == cls %}selected{% endif %}>{{ cls }}</option>
                 {% endfor %}
             </select>
         </form>
@@ -93,6 +120,9 @@
                     <th style="padding: 12px; text-align: left;">Teacher</th>
                     <th style="padding: 12px; text-align: left;">Time</th>
                     <th style="padding: 12px; text-align: left;">Average</th>
+                    <th style="padding: 12px; text-align: left;">Phase</th>
+                    <th style="padding: 12px; text-align: left;">Class</th>
+
                     <th style="padding: 12px;">Details</th>
                 </tr>
                 </thead>
@@ -104,6 +134,9 @@
                     <td style="padding: 12px;">{{ fb.teacher_name }}</td>
                     <td style="padding: 12px;">{{ fb.timestamp }}</td>
                     <td style="padding: 12px;">{{ (fb.responses.values() | sum / 20) | round(1) }}</td>
+                    <td style="padding: 12px;">{{ fb.phase }}</td>
+                    <td style="padding: 12px;">{{ fb.student_class }}</td>
+
                     <td style="padding: 12px;">
                         <button class="expand-btn" onclick="toggleDetails({{ fb.id }})" id="btn-{{ fb.id }}">Show Details</button>
                     </td>

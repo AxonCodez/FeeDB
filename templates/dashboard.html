@@ -29,6 +29,12 @@
             {% endif %}
         {% endwith %}
 
+        {% if current_phase %}
+        <p class="subtitle">Feedback Phase: <strong>{{ current_phase }}</strong></p>
+        {% else %}
+        <div class="alert alert-info">No active feedback phase right now.</div>
+        {% endif %}
+
         <main>
             <h2>Your Teachers</h2>
             <p class="subtitle">Please provide feedback for each of your teachers</p>

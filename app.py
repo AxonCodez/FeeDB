@@ -12,6 +12,7 @@ TEACHERS_FILE = 'data/teachers.json'
 FEEDBACK_FILE = 'data/feedback.json'
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin"
+PHASES_FILE = 'data/phases.json'
 
 def init_data_files():
     os.makedirs('data', exist_ok=True)
@@ -27,6 +28,17 @@ def init_data_files():
 
 def load_data(file): return json.load(open(file)) if os.path.exists(file) else {}
 def save_data(file, data): json.dump(data, open(file, 'w'), indent=2)
+
+def load_phases():
+    try:
+        with open(PHASES_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"phases": {}, "current_phase": None}
+
+def save_phases(data):
+    with open(PHASES_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
 
 def login_required(f):
     @wraps(f)
@@ -72,13 +84,20 @@ def dashboard():
     sid = session['student_id']
     assigned = students[sid]['teachers']
     teacher_details = []
+    phases = load_phases()
+    current_phase = phases.get("current_phase")
+
     for code in assigned:
         if code in teachers:
-            info = teachers[code]
+            info = teachers[code].copy()
             info['code'] = code
-            info['feedback_submitted'] = any(f['student_id'] == sid and f['teacher_code'] == code for f in feedback)
+            info['feedback_submitted'] = any(
+                f['student_id'] == sid and f['teacher_code'] == code and f.get('phase') == current_phase for f in feedback
+            )
             teacher_details.append(info)
-    return render_template("dashboard.html", teachers=teacher_details)
+
+    return render_template("dashboard.html", teachers=teacher_details, current_phase=current_phase)
+
 
 @app.route('/feedback/<teacher_code>', methods=['GET', 'POST'])
 @login_required
@@ -86,14 +105,22 @@ def submit_feedback(teacher_code):
     students = load_data(STUDENTS_FILE)
     teachers = load_data(TEACHERS_FILE)
     feedback = load_data(FEEDBACK_FILE)
+    phases = load_phases()
+    current_phase = phases.get("current_phase")
+
+    if not current_phase:
+        flash("No active feedback phase. Please try later.", "error")
+        return redirect(url_for('dashboard'))
+
     sid = session['student_id']
 
     if teacher_code not in students[sid]['teachers']:
         flash("You are not authorized to give feedback")
         return redirect(url_for('dashboard'))
 
-    if any(f['student_id'] == sid and f['teacher_code'] == teacher_code for f in feedback):
-        flash("Feedback already submitted")
+    # Restrict: only allow one feedback per phase per teacher
+    if any(f['student_id'] == sid and f['teacher_code'] == teacher_code and f.get('phase') == current_phase for f in feedback):
+        flash("Feedback already submitted for this phase")
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
@@ -103,7 +130,8 @@ def submit_feedback(teacher_code):
             'student_id': sid,
             'teacher_code': teacher_code,
             'responses': responses,
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'phase': current_phase
         })
         save_data(FEEDBACK_FILE, feedback)
         flash("Feedback submitted")
@@ -140,6 +168,9 @@ def admin_dashboard():
     feedback = load_data(FEEDBACK_FILE)
     teachers = load_data(TEACHERS_FILE)
     stats = {}
+    phases = load_phases()
+    current_phase = phases.get('current_phase')
+
     for code, info in teachers.items():
         entries = [f for f in feedback if f['teacher_code'] == code]
         if entries:
@@ -151,7 +182,7 @@ def admin_dashboard():
                 'overall_average': round(sum(avg.values())/20, 2),
                 'detailed_ratings': avg
             }
-    return render_template('admin.html', stats=stats)
+    return render_template('admin.html', stats=stats, current_phase=current_phase)
 
 
 @app.route('/admin/feedbacks')
@@ -165,22 +196,35 @@ def all_feedbacks():
     teachers = load_data(TEACHERS_FILE)
 
     for fb in feedback:
-        fb['student_name'] = students.get(fb['student_id'], {}).get('name', 'Unknown')
-        fb['teacher_name'] = teachers.get(fb['teacher_code'], {}).get('name', 'Unknown')
+        sid = fb['student_id']
+        tcode = fb['teacher_code']
+        fb['student_name'] = students.get(sid, {}).get('name', 'Unknown')
+        fb['student_class'] = students.get(sid, {}).get('class', 'N/A')
+        fb['teacher_name'] = teachers.get(tcode, {}).get('name', 'Unknown')
+        fb['phase'] = fb.get('phase', 'N/A')
 
-    # ✅ Apply filtering based on sort category
     if sort_by == 'student' and filter_value:
         feedback = [f for f in feedback if f['student_id'] == filter_value]
     elif sort_by == 'teacher' and filter_value:
         feedback = [f for f in feedback if f['teacher_code'] == filter_value]
+    elif sort_by == 'phase' and filter_value:
+        feedback = [f for f in feedback if f.get('phase') == filter_value]
+    elif sort_by == 'class' and filter_value:
+        feedback = [f for f in feedback if students.get(f['student_id'], {}).get('class') == filter_value]
 
-    # ✅ Apply sorting
     if sort_by == 'student':
         feedback.sort(key=lambda f: f['student_name'])
     elif sort_by == 'teacher':
         feedback.sort(key=lambda f: f['teacher_name'])
+    elif sort_by == 'phase':
+        feedback.sort(key=lambda f: f['phase'])
+    elif sort_by == 'class':
+        feedback.sort(key=lambda f: f['student_class'])
     else:
         feedback.sort(key=lambda f: f['timestamp'], reverse=True)
+
+    all_phases = sorted(set(f.get('phase', 'N/A') for f in feedback if f.get('phase')))
+    all_classes = sorted(set(students.get(f['student_id'], {}).get('class', 'N/A') for f in feedback))
 
     return render_template(
         'admin_feedbacks.html',
@@ -188,8 +232,11 @@ def all_feedbacks():
         sort_by=sort_by,
         filter_value=filter_value,
         student_list=students,
-        teacher_list=teachers
+        teacher_list=teachers,
+        all_phases=all_phases,
+        all_classes=all_classes
     )
+
 
 @app.route('/admin/export')
 @admin_required
@@ -220,6 +267,31 @@ def manage_teachers():
         save_data(TEACHERS_FILE, teachers)
         return redirect(url_for('manage_teachers'))
     return render_template('admin_manage_teachers.html', teachers=teachers)
+
+@app.route('/admin/phases', methods=['GET', 'POST'])
+@admin_required
+def manage_phases():
+    phases_data = load_phases()
+    if request.method == 'POST':
+        action = request.form.get('action')
+        phase_name = request.form.get('phase_name')
+
+        if action == 'create' and phase_name:
+            phases_data['phases'][phase_name] = 'closed'
+        elif action == 'activate' and phase_name in phases_data['phases']:
+            for p in phases_data['phases']:
+                phases_data['phases'][p] = 'closed'
+            phases_data['phases'][phase_name] = 'active'
+            phases_data['current_phase'] = phase_name
+        elif action == 'end' and phase_name in phases_data['phases']:
+            phases_data['phases'][phase_name] = 'closed'
+            if phases_data['current_phase'] == phase_name:
+                phases_data['current_phase'] = None
+
+        save_phases(phases_data)
+        return redirect(url_for('manage_phases'))
+
+    return render_template('admin_phases.html', phases=phases_data.get('phases', {}), current_phase=phases_data.get('current_phase'))
 
 @app.route('/admin/manage-students', methods=['GET', 'POST'])
 @admin_required

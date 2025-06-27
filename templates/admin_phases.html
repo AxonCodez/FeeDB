@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Phases - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            background-color: #ccc;
+            border-radius: 34px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: 0.4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>Manage Feedback Phases</h1>
+            <p>Toggle active phase for student feedback</p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 1rem;">← Back to Dashboard</a>
+
+        <!-- Current Phase -->
+        <div class="form-group">
+            <label><strong>Current Active Phase:</strong></label>
+            <div style="padding: 10px 15px; background: #ecf0f1; border-radius: 8px;">
+                {{ current_phase if current_phase else "No phase is currently active" }}
+            </div>
+        </div>
+
+        <!-- Create New Phase -->
+        <form method="POST" class="login-form" style="margin-top: 20px;">
+            <input type="hidden" name="action" value="create">
+            <div class="form-group">
+                <label for="phase_name">Create New Phase</label>
+                <input type="text" id="phase_name" name="phase_name" placeholder="e.g. Term 1" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Create Phase</button>
+        </form>
+
+        <!-- Existing Phases with Toggles -->
+        {% if phases %}
+        <div style="margin-top: 30px;">
+            <h3>Toggle Phase Status</h3>
+            <ul class="admin-list">
+                {% for name, status in phases.items() %}
+                <li class="admin-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="admin-item-info">
+                        <strong>{{ name }}</strong> — 
+                        <span style="color: {{ 'green' if status == 'active' else 'gray' }};">{{ status }}</span>
+                    </div>
+                    <form method="POST" style="margin-left: 20px;">
+                        <input type="hidden" name="phase_name" value="{{ name }}">
+                        <input type="hidden" name="action" value="{{ 'activate' if status != 'active' else 'end' }}">
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="this.form.submit()" {% if status == 'active' %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <p class="subtitle">No phases created yet.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

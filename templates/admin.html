@@ -14,10 +14,25 @@
                     <a href="{{ url_for('export_csv') }}" class="btn btn-secondary">Export as CSV</a>
                     <a href="{{ url_for('manage_teachers') }}" class="btn btn-secondary">Manage Teachers</a>
                     <a href="{{ url_for('manage_students') }}" class="btn btn-secondary">Manage Students</a>
+                    <a href="{{ url_for('manage_phases') }}" class="btn btn-secondary">Manage Phase</a>
                     <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </header>
+
+        <!-- ✅ Phase Banner -->
+        {% if current_phase %}
+        <div class="form-group" style="margin: 25px 0;">
+            <label><strong>Current Feedback Phase:</strong></label>
+            <div style="padding: 10px 15px; background: #ecf0f1; border-radius: 8px; font-weight: 500;">
+                {{ current_phase }}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info" style="margin: 25px 0;">
+            No feedback phase is currently active.
+        </div>
+        {% endif %}
 
         <main>
             {% if stats %}
@@ -49,7 +64,7 @@
                                 {% for question, rating in data.detailed_ratings.items() %}
                                 <div class="rating-item">
                                     <span class="question-num">Q{{ question[1:] }}</span>
-                                    <span class="rating-value">{{ "%.1f"|format(rating) }}</span>
+                                    <span class="rating-value">{{ ('%.1f' % rating) }}</span>
                                 </div>
                                 {% endfor %}
                             </div>

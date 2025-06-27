@@ -1,0 +1,9 @@
+{
+  "phases": {
+    "Term 1": "closed",
+    "Term 2": "closed",
+    "Finals": "closed",
+    "Phase 1": "active"
+  },
+  "current_phase": "Phase 1"
+}
