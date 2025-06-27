@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 import json, os, csv
 from datetime import datetime
 from functools import wraps
-from io import StringIO
+from io import StringIO, BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'
@@ -242,15 +242,33 @@ def all_feedbacks():
 @admin_required
 def export_csv():
     feedback = load_data(FEEDBACK_FILE)
-    output = StringIO()
-    writer = csv.writer(output)
-    writer.writerow(['ID', 'Student ID', 'Teacher Code', 'Timestamp'] + [f'Q{i}' for i in range(1, 21)])
-    for f in feedback:
-        row = [f['id'], f['student_id'], f['teacher_code'], f['timestamp']] + [f['responses'].get(f'q{i}', '') for i in range(1, 21)]
-        writer.writerow(row)
-    output.seek(0)
-    return send_file(output, mimetype='text/csv', download_name='feedback_export.csv', as_attachment=True)
+    students = load_data(STUDENTS_FILE)
 
+    # Step 1: Write to StringIO (text)
+    text_stream = StringIO()
+    writer = csv.writer(text_stream)
+    writer.writerow(['ID', 'Student ID', 'Teacher Code', 'Timestamp', 'Phase', 'Class'] + [f'Q{i}' for i in range(1, 21)])
+
+    for f in feedback:
+        sid = f['student_id']
+        row = [
+            f['id'], sid, f['teacher_code'], f['timestamp'],
+            f.get('phase', 'N/A'),
+            students.get(sid, {}).get('class', 'N/A')
+        ] + [f['responses'].get(f'q{i}', '') for i in range(1, 21)]
+        writer.writerow(row)
+
+    # Step 2: Convert to bytes for sending
+    text_stream.seek(0)
+    byte_stream = BytesIO(text_stream.getvalue().encode('utf-8'))
+
+    return send_file(
+        byte_stream,
+        mimetype='text/csv',
+        download_name='feedback_export.csv',
+        as_attachment=True
+    )
+    
 @app.route('/admin/manage-teachers', methods=['GET', 'POST'])
 @admin_required
 def manage_teachers():
