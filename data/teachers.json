@@ -1,0 +1,22 @@
+{
+  "MNP": {
+    "name": "Dr. Mathematics",
+    "subject": "Mathematics"
+  },
+  "PSN": {
+    "name": "Prof. Physics",
+    "subject": "Physics"
+  },
+  "BLR": {
+    "name": "Ms. Biology",
+    "subject": "Biology"
+  },
+  "ETM": {
+    "name": "Mr. English",
+    "subject": "English"
+  },
+  "IZJ": {
+    "name": "Mrs. Computer",
+    "subject": "Computer Science"
+  }
+}

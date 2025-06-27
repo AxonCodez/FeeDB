@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Teachers - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Manage Teachers</h1>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+    <h2>Add Teacher</h2>
+    <form method="POST">
+        <input type="hidden" name="action" value="add">
+        <input name="code" placeholder="Code (e.g. MTH)" required>
+        <input name="name" placeholder="Name" required>
+        <input name="subject" placeholder="Subject" required>
+        <button type="submit">Add</button>
+    </form>
+    <h2>Existing Teachers</h2>
+    <ul>
+    {% for code, teacher in teachers.items() %}
+        <li>{{ teacher.name }} ({{ teacher.subject }}) [{{ code }}]
+            <form method="POST" style="display:inline">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="code" value="{{ code }}">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <nav>
+                <a href="{{ url_for('all_feedbacks') }}" class="btn btn-secondary">View All Feedbacks</a>
+                <a href="{{ url_for('export_csv') }}" class="btn">Export as CSV</a>
+                <a href="{{ url_for('manage_teachers') }}" class="btn">Manage Teachers</a>
+                <a href="{{ url_for('manage_students') }}" class="btn">Manage Students</a>
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Logout</a>
+            </nav>
+        </header>
+
+        <section>
+            <h2>Teacher Statistics</h2>
+            {% for code, stat in stats.items() %}
+            <div class="card">
+                <h3>{{ stat.name }} ({{ code }}) - {{ stat.subject }}</h3>
+                <p>Total Responses: {{ stat.total_responses }}</p>
+                <p>Overall Average: {{ stat.overall_average }}</p>
+            </div>
+            {% endfor %}
+        </section>
+    </div>
+</body>
+</html>

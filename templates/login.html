@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeeDB - Student Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>FeeDB</h1>
+                <p>Teacher Evaluation System</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="student_id">Student ID</label>
+                    <input type="text" id="student_id" name="student_id" placeholder="Enter your 4-digit ID" maxlength="4" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Demo IDs: 5220, 5221 | Password: pass123, pass456</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

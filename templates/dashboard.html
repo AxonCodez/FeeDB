@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>FeeDB Dashboard</h1>
+                    <p>Welcome, {{ session.student_name }} ({{ session.student_id }}) - Class {{ session.student_class }}</p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ url_for('view_feedback') }}" class="btn btn-secondary">My Feedback</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                </div>
+            </div>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <main>
+            <h2>Your Teachers</h2>
+            <p class="subtitle">Please provide feedback for each of your teachers</p>
+            
+            <div class="teachers-grid">
+                {% for teacher in teachers %}
+                <div class="teacher-card {% if teacher.feedback_submitted %}completed{% endif %}">
+                    <div class="teacher-info">
+                        <h3>{{ teacher.name }}</h3>
+                        <p class="subject">{{ teacher.subject }}</p>
+                        <p class="teacher-code">Code: {{ teacher.code }}</p>
+                    </div>
+                    <div class="teacher-actions">
+                        {% if teacher.feedback_submitted %}
+                            <span class="status-badge completed">✓ Completed</span>
+                        {% else %}
+                            <a href="{{ url_for('submit_feedback', teacher_code=teacher.code) }}" class="btn btn-primary">Give Feedback</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>

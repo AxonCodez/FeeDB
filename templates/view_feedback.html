@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Feedback - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>My Submitted Feedback</h1>
+                    <p>{{ session.student_name }} ({{ session.student_id }})</p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            {% if feedback_list %}
+                <div class="feedback-summary">
+                    {% for feedback in feedback_list %}
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <h3>{{ feedback.teacher_name }}</h3>
+                            <span class="subject-tag">{{ feedback.subject }}</span>
+                        </div>
+                        <div class="feedback-meta">
+                            <span class="teacher-code">Code: {{ feedback.teacher_code }}</span>
+                            <span class="timestamp">Submitted: {{ feedback.timestamp }}</span>
+                        </div>
+                        <div class="rating-summary">
+                            {% set total_rating = feedback.responses.values() | sum %}
+                            {% set avg_rating = (total_rating / 20) | round(1) %}
+                            <span class="overall-rating">Overall Rating: {{ avg_rating }}/5.0</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: {{ (avg_rating/5)*100 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-feedback">
+                    <h3>No feedback submitted yet</h3>
+                    <p>Go back to your dashboard to start evaluating your teachers.</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>

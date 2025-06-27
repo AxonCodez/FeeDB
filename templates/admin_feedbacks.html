@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Feedbacks - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>All Submitted Feedbacks</h1>
+        <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+        {% if feedbacks %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student</th>
+                    <th>Teacher</th>
+                    <th>Time</th>
+                    <th>Avg</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for fb in feedbacks %}
+                <tr>
+                    <td>{{ fb.id }}</td>
+                    <td>{{ fb.student_name }}</td>
+                    <td>{{ fb.teacher_name }}</td>
+                    <td>{{ fb.timestamp }}</td>
+                    <td>{{ (fb.responses.values() | sum / 20) | round(1) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No feedback yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

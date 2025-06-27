@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Feedback - FeeDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>Teacher Evaluation</h1>
+                    <p>{{ teacher.name }} - {{ teacher.subject }}</p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <form method="POST" class="feedback-form">
+                <div class="form-section">
+                    <h3>Course Content</h3>
+                    
+                    <div class="question-group">
+                        <label>1. The teacher covers the entire syllabus within the course duration</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q1" value="5" id="q1_5"><label for="q1_5">Excellent</label>
+                            <input type="radio" name="q1" value="4" id="q1_4"><label for="q1_4">Good</label>
+                            <input type="radio" name="q1" value="3" id="q1_3"><label for="q1_3">Average</label>
+                            <input type="radio" name="q1" value="2" id="q1_2"><label for="q1_2">Below Average</label>
+                            <input type="radio" name="q1" value="1" id="q1_1"><label for="q1_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>2. The teacher discusses topics in detail without skipping topics</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q2" value="5" id="q2_5"><label for="q2_5">Excellent</label>
+                            <input type="radio" name="q2" value="4" id="q2_4"><label for="q2_4">Good</label>
+                            <input type="radio" name="q2" value="3" id="q2_3"><label for="q2_3">Average</label>
+                            <input type="radio" name="q2" value="2" id="q2_2"><label for="q2_2">Below Average</label>
+                            <input type="radio" name="q2" value="1" id="q2_1"><label for="q2_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>3. The teacher possesses deep knowledge of the subject taught</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q3" value="5" id="q3_5"><label for="q3_5">Excellent</label>
+                            <input type="radio" name="q3" value="4" id="q3_4"><label for="q3_4">Good</label>
+                            <input type="radio" name="q3" value="3" id="q3_3"><label for="q3_3">Average</label>
+                            <input type="radio" name="q3" value="2" id="q3_2"><label for="q3_2">Below Average</label>
+                            <input type="radio" name="q3" value="1" id="q3_1"><label for="q3_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>4. The teacher communicates clearly</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q4" value="5" id="q4_5"><label for="q4_5">Excellent</label>
+                            <input type="radio" name="q4" value="4" id="q4_4"><label for="q4_4">Good</label>
+                            <input type="radio" name="q4" value="3" id="q4_3"><label for="q4_3">Average</label>
+                            <input type="radio" name="q4" value="2" id="q4_2"><label for="q4_2">Below Average</label>
+                            <input type="radio" name="q4" value="1" id="q4_1"><label for="q4_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>5. The teacher inspires me by his/her knowledge in the subject</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q5" value="5" id="q5_5"><label for="q5_5">Excellent</label>
+                            <input type="radio" name="q5" value="4" id="q5_4"><label for="q5_4">Good</label>
+                            <input type="radio" name="q5" value="3" id="q5_3"><label for="q5_3">Average</label>
+                            <input type="radio" name="q5" value="2" id="q5_2"><label for="q5_2">Below Average</label>
+                            <input type="radio" name="q5" value="1" id="q5_1"><label for="q5_1">Poor</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Teaching – Learning Process</h3>
+                    
+                    <div class="question-group">
+                        <label>6. The teacher is punctual to the class</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q6" value="5" id="q6_5"><label for="q6_5">Excellent</label>
+                            <input type="radio" name="q6" value="4" id="q6_4"><label for="q6_4">Good</label>
+                            <input type="radio" name="q6" value="3" id="q6_3"><label for="q6_3">Average</label>
+                            <input type="radio" name="q6" value="2" id="q6_2"><label for="q6_2">Below Average</label>
+                            <input type="radio" name="q6" value="1" id="q6_1"><label for="q6_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>7. The teacher engages the class for the full duration and completes the course in time</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q7" value="5" id="q7_5"><label for="q7_5">Excellent</label>
+                            <input type="radio" name="q7" value="4" id="q7_4"><label for="q7_4">Good</label>
+                            <input type="radio" name="q7" value="3" id="q7_3"><label for="q7_3">Average</label>
+                            <input type="radio" name="q7" value="2" id="q7_2"><label for="q7_2">Below Average</label>
+                            <input type="radio" name="q7" value="1" id="q7_1"><label for="q7_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>8. The teacher comes fully prepared for the class</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q8" value="5" id="q8_5"><label for="q8_5">Excellent</label>
+                            <input type="radio" name="q8" value="4" id="q8_4"><label for="q8_4">Good</label>
+                            <input type="radio" name="q8" value="3" id="q8_3"><label for="q8_3">Average</label>
+                            <input type="radio" name="q8" value="2" id="q8_2"><label for="q8_2">Below Average</label>
+                            <input type="radio" name="q8" value="1" id="q8_1"><label for="q8_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>9. The teacher provides guidance counselling in academic and non-academic matters in/outside the class</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q9" value="5" id="q9_5"><label for="q9_5">Excellent</label>
+                            <input type="radio" name="q9" value="4" id="q9_4"><label for="q9_4">Good</label>
+                            <input type="radio" name="q9" value="3" id="q9_3"><label for="q9_3">Average</label>
+                            <input type="radio" name="q9" value="2" id="q9_2"><label for="q9_2">Below Average</label>
+                            <input type="radio" name="q9" value="1" id="q9_1"><label for="q9_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>10. The teacher encourages participation and discussion in class (Teacher-Student, Student-Student)</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q10" value="5" id="q10_5"><label for="q10_5">Excellent</label>
+                            <input type="radio" name="q10" value="4" id="q10_4"><label for="q10_4">Good</label>
+                            <input type="radio" name="q10" value="3" id="q10_3"><label for="q10_3">Average</label>
+                            <input type="radio" name="q10" value="2" id="q10_2"><label for="q10_2">Below Average</label>
+                            <input type="radio" name="q10" value="1" id="q10_1"><label for="q10_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>11. The teacher encourages and values disagreement</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q11" value="5" id="q11_5"><label for="q11_5">Excellent</label>
+                            <input type="radio" name="q11" value="4" id="q11_4"><label for="q11_4">Good</label>
+                            <input type="radio" name="q11" value="3" id="q11_3"><label for="q11_3">Average</label>
+                            <input type="radio" name="q11" value="2" id="q11_2"><label for="q11_2">Below Average</label>
+                            <input type="radio" name="q11" value="1" id="q11_1"><label for="q11_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>12. The teacher uses modern teaching aids/gadgets, handouts, suggestion of references, PPT, web-resources</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q12" value="5" id="q12_5"><label for="q12_5">Excellent</label>
+                            <input type="radio" name="q12" value="4" id="q12_4"><label for="q12_4">Good</label>
+                            <input type="radio" name="q12" value="3" id="q12_3"><label for="q12_3">Average</label>
+                            <input type="radio" name="q12" value="2" id="q12_2"><label for="q12_2">Below Average</label>
+                            <input type="radio" name="q12" value="1" id="q12_1"><label for="q12_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>13. The teacher pays attention to academically weaker students as well</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q13" value="5" id="q13_5"><label for="q13_5">Excellent</label>
+                            <input type="radio" name="q13" value="4" id="q13_4"><label for="q13_4">Good</label>
+                            <input type="radio" name="q13" value="3" id="q13_3"><label for="q13_3">Average</label>
+                            <input type="radio" name="q13" value="2" id="q13_2"><label for="q13_2">Below Average</label>
+                            <input type="radio" name="q13" value="1" id="q13_1"><label for="q13_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>14. The teacher relates the course material with real world situations</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q14" value="5" id="q14_5"><label for="q14_5">Excellent</label>
+                            <input type="radio" name="q14" value="4" id="q14_4"><label for="q14_4">Good</label>
+                            <input type="radio" name="q14" value="3" id="q14_3"><label for="q14_3">Average</label>
+                            <input type="radio" name="q14" value="2" id="q14_2"><label for="q14_2">Below Average</label>
+                            <input type="radio" name="q14" value="1" id="q14_1"><label for="q14_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>15. The teacher's attitude toward the students was friendly and helpful</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q15" value="5" id="q15_5"><label for="q15_5">Excellent</label>
+                            <input type="radio" name="q15" value="4" id="q15_4"><label for="q15_4">Good</label>
+                            <input type="radio" name="q15" value="3" id="q15_3"><label for="q15_3">Average</label>
+                            <input type="radio" name="q15" value="2" id="q15_2"><label for="q15_2">Below Average</label>
+                            <input type="radio" name="q15" value="1" id="q15_1"><label for="q15_1">Poor</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Evaluation Process</h3>
+                    
+                    <div class="question-group">
+                        <label>16. Periodical assessments were conducted as per schedule</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q16" value="5" id="q16_5"><label for="q16_5">Excellent</label>
+                            <input type="radio" name="q16" value="4" id="q16_4"><label for="q16_4">Good</label>
+                            <input type="radio" name="q16" value="3" id="q16_3"><label for="q16_3">Average</label>
+                            <input type="radio" name="q16" value="2" id="q16_2"><label for="q16_2">Below Average</label>
+                            <input type="radio" name="q16" value="1" id="q16_1"><label for="q16_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>17. The teacher uses methods of evaluation like Quiz, Seminars, Assignments, Class room presentation/participation</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q17" value="5" id="q17_5"><label for="q17_5">Excellent</label>
+                            <input type="radio" name="q17" value="4" id="q17_4"><label for="q17_4">Good</label>
+                            <input type="radio" name="q17" value="3" id="q17_3"><label for="q17_3">Average</label>
+                            <input type="radio" name="q17" value="2" id="q17_2"><label for="q17_2">Below Average</label>
+                            <input type="radio" name="q17" value="1" id="q17_1"><label for="q17_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>18. Question paper covers all the topics in the Curriculum</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q18" value="5" id="q18_5"><label for="q18_5">Excellent</label>
+                            <input type="radio" name="q18" value="4" id="q18_4"><label for="q18_4">Good</label>
+                            <input type="radio" name="q18" value="3" id="q18_3"><label for="q18_3">Average</label>
+                            <input type="radio" name="q18" value="2" id="q18_2"><label for="q18_2">Below Average</label>
+                            <input type="radio" name="q18" value="1" id="q18_1"><label for="q18_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>19. The teacher was fair and unbiased in the evaluation Process</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q19" value="5" id="q19_5"><label for="q19_5">Excellent</label>
+                            <input type="radio" name="q19" value="4" id="q19_4"><label for="q19_4">Good</label>
+                            <input type="radio" name="q19" value="3" id="q19_3"><label for="q19_3">Average</label>
+                            <input type="radio" name="q19" value="2" id="q19_2"><label for="q19_2">Below Average</label>
+                            <input type="radio" name="q19" value="1" id="q19_1"><label for="q19_1">Poor</label>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label>20. Overall Rating of the Teacher: In my view the teacher has professional competence and is a role model</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q20" value="5" id="q20_5"><label for="q20_5">Excellent</label>
+                            <input type="radio" name="q20" value="4" id="q20_4"><label for="q20_4">Good</label>
+                            <input type="radio" name="q20" value="3" id="q20_3"><label for="q20_3">Average</label>
+                            <input type="radio" name="q20" value="2" id="q20_2"><label for="q20_2">Below Average</label>
+                            <input type="radio" name="q20" value="1" id="q20_1"><label for="q20_1">Poor</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">Submit Evaluation</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </main>
+    </div>
+    
+    <script>
+        // Ensure all questions are answered before submission
+        document.querySelector('.feedback-form').addEventListener('submit', function(e) {
+            const requiredQuestions = 20;
+            let answeredQuestions = 0;
+            
+            for (let i = 1; i <= requiredQuestions; i++) {
+                const questionInputs = document.querySelectorAll(`input[name="q${i}"]:checked`);
+                if (questionInputs.length > 0) {
+                    answeredQuestions++;
+                }
+            }
+            
+            if (answeredQuestions < requiredQuestions) {
+                e.preventDefault();
+                alert(`Please answer all questions. You have answered ${answeredQuestions} out of ${requiredQuestions} questions.`);
+            }
+        });
+    </script>
+</body>
+</html>
