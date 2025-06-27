@@ -18,5 +18,17 @@
   "IZJ": {
     "name": "Mrs. Computer",
     "subject": "Computer Science"
+  },
+  "MPK": {
+    "name": "HDSH",
+    "subject": "Maathematics"
+  },
+  "IRN": {
+    "name": "Nithiya",
+    "subject": "Computer Science"
+  },
+  "EAK": {
+    "name": "Abhimanyu",
+    "subject": "English"
   }
 }

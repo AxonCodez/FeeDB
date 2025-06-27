@@ -5,36 +5,82 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div class="container">
-    <h1>Manage Students</h1>
-    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+    <div class="container">
 
-    <h2>Add Student</h2>
-    <form method="POST">
-        <input type="hidden" name="action" value="add">
-        <input name="student_id" placeholder="Student ID" required>
-        <input name="name" placeholder="Name" required>
-        <input name="student_class" placeholder="Class" required>
-        <input name="password" placeholder="Password" required>
-        <h3>Assign Teachers</h3>
-        {% for code, t in teachers.items() %}
-        <label><input type="checkbox" name="teachers" value="{{ code }}"> {{ t.name }} ({{ t.subject }})</label><br>
-        {% endfor %}
-        <button type="submit">Add</button>
-    </form>
+        <!-- Add Student Form Card -->
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Manage Students</h1>
+                <p>Add a new student</p>
+            </div>
 
-    <h2>Existing Students</h2>
-    <ul>
-    {% for sid, student in students.items() %}
-        <li>{{ student.name }} - {{ student.class }} ({{ sid }})
-            <form method="POST" style="display:inline">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="student_id" value="{{ sid }}">
-                <button type="submit">Delete</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 1rem;">← Back to Dashboard</a>
+
+            <form method="POST" class="login-form">
+                <input type="hidden" name="action" value="add">
+
+                <div class="form-group">
+                    <label for="student_id">Student ID</label>
+                    <input type="text" name="student_id" id="student_id" placeholder="e.g. 5220" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Student Name</label>
+                    <input type="text" name="name" id="name" placeholder="e.g. John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="student_class">Class</label>
+                    <input type="text" name="student_class" id="student_class" placeholder="e.g. 10A" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Enter a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Assign Teachers</label>
+                    <div class="form-checkbox-group">
+                        {% for code, t in teachers.items() %}
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="teachers" value="{{ code }}">
+                            {{ t.name }} ({{ t.subject }})
+                        </label><br>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Add Student</button>
             </form>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
+        </div>
+
+        <!-- Existing Students Card -->
+        <div class="login-card" style="margin-top: 40px;">
+            <div class="login-header">
+                <h2>Existing Students</h2>
+                <p>Manage current student records</p>
+            </div>
+
+            {% if students %}
+            <ul class="admin-list">
+                {% for sid, student in students.items() %}
+                <li class="admin-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="admin-item-info">
+                        <strong>{{ student.name }}</strong> — Class {{ student.class }} ({{ sid }})
+                    </div>
+                    <form method="POST" class="inline-form">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="student_id" value="{{ sid }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="subtitle">No students found.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

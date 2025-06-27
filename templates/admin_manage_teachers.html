@@ -5,29 +5,65 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div class="container">
-    <h1>Manage Teachers</h1>
-    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
-    <h2>Add Teacher</h2>
-    <form method="POST">
-        <input type="hidden" name="action" value="add">
-        <input name="code" placeholder="Code (e.g. MTH)" required>
-        <input name="name" placeholder="Name" required>
-        <input name="subject" placeholder="Subject" required>
-        <button type="submit">Add</button>
-    </form>
-    <h2>Existing Teachers</h2>
-    <ul>
-    {% for code, teacher in teachers.items() %}
-        <li>{{ teacher.name }} ({{ teacher.subject }}) [{{ code }}]
-            <form method="POST" style="display:inline">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="code" value="{{ code }}">
-                <button type="submit">Delete</button>
+    <div class="container">
+
+        <!-- Add Teacher Form Card -->
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Manage Teachers</h1>
+                <p>Add a new teacher</p>
+            </div>
+
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 1rem;">← Back to Dashboard</a>
+
+            <form method="POST" class="login-form">
+                <input type="hidden" name="action" value="add">
+                
+                <div class="form-group">
+                    <label for="code">Teacher Code</label>
+                    <input type="text" name="code" id="code" placeholder="e.g. MTH" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Teacher Name</label>
+                    <input type="text" name="name" id="name" placeholder="e.g. Mr. Kumar" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" name="subject" id="subject" placeholder="e.g. Mathematics" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Add Teacher</button>
             </form>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
+        </div>
+
+        <!-- Existing Teachers List Card -->
+        <div class="login-card" style="margin-top: 40px;">
+            <div class="login-header">
+                <h2>Existing Teachers</h2>
+                <p>Manage current teacher records</p>
+            </div>
+
+            {% if teachers %}
+            <ul class="admin-list">
+                {% for code, teacher in teachers.items() %}
+                <li class="admin-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="admin-item-info">
+                        <strong>{{ teacher.name }}</strong> — {{ teacher.subject }} ({{ code }})
+                    </div>
+                    <form method="POST" class="inline-form">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="code" value="{{ code }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="subtitle">No teachers available.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

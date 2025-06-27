@@ -1,39 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>All Feedbacks - FeeDB</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .details-row {
+            display: none;
+            background: #f9f9f9;
+        }
+        .details-row td {
+            padding: 12px;
+            border-top: 1px solid #ddd;
+        }
+        .expand-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0;
+        }
+    </style>
+    <script>
+        function toggleDetails(id) {
+            const row = document.getElementById('details-' + id);
+            const btn = document.getElementById('btn-' + id);
+            if (row.style.display === 'table-row') {
+                row.style.display = 'none';
+                btn.innerText = 'Show Details';
+            } else {
+                row.style.display = 'table-row';
+                btn.innerText = 'Hide Details';
+            }
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>All Submitted Feedbacks</h1>
-        <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+<div class="container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>All Submitted Feedbacks</h1>
+            <p>View responses sorted by time, student, or teacher</p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="margin-bottom: 1.5rem;">← Back to Dashboard</a>
+
+        <!-- Sort Buttons -->
+        <div class="header-actions" style="margin-bottom: 20px;">
+            <a href="{{ url_for('all_feedbacks', sort='time') }}" class="btn {% if sort_by == 'time' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Time</a>
+            <a href="{{ url_for('all_feedbacks', sort='student') }}" class="btn {% if sort_by == 'student' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Student</a>
+            <a href="{{ url_for('all_feedbacks', sort='teacher') }}" class="btn {% if sort_by == 'teacher' %}btn-primary{% else %}btn-outline{% endif %}">Sort by Teacher</a>
+        </div>
+
+        <!-- Dropdown Filters -->
+        {% if sort_by == 'student' %}
+        <form method="get" class="form-group" style="margin-bottom: 20px;">
+            <input type="hidden" name="sort" value="student">
+            <label for="filter">Select Student:</label>
+            <select name="filter" onchange="this.form.submit()" style="width: 100%; padding: 10px; border-radius: 8px;">
+                <option value="">-- All Students --</option>
+                {% for sid, student in student_list.items() %}
+                <option value="{{ sid }}" {% if filter_value == sid %}selected{% endif %}>
+                    {{ student.name }} ({{ sid }})
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+        {% elif sort_by == 'teacher' %}
+        <form method="get" class="form-group" style="margin-bottom: 20px;">
+            <input type="hidden" name="sort" value="teacher">
+            <label for="filter">Select Teacher:</label>
+            <select name="filter" onchange="this.form.submit()" style="width: 100%; padding: 10px; border-radius: 8px;">
+                <option value="">-- All Teachers --</option>
+                {% for code, teacher in teacher_list.items() %}
+                <option value="{{ code }}" {% if filter_value == code %}selected{% endif %}>
+                    {{ teacher.name }} ({{ code }})
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+        {% endif %}
+
+        <!-- Feedback Table -->
         {% if feedbacks %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Student</th>
-                    <th>Teacher</th>
-                    <th>Time</th>
-                    <th>Avg</th>
+        <div style="overflow-x: auto;">
+            <table class="feedback-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 12px; text-align: left;">ID</th>
+                    <th style="padding: 12px; text-align: left;">Student</th>
+                    <th style="padding: 12px; text-align: left;">Teacher</th>
+                    <th style="padding: 12px; text-align: left;">Time</th>
+                    <th style="padding: 12px; text-align: left;">Average</th>
+                    <th style="padding: 12px;">Details</th>
                 </tr>
-            </thead>
-            <tbody>
-            {% for fb in feedbacks %}
+                </thead>
+                <tbody>
+                {% for fb in feedbacks %}
                 <tr>
-                    <td>{{ fb.id }}</td>
-                    <td>{{ fb.student_name }}</td>
-                    <td>{{ fb.teacher_name }}</td>
-                    <td>{{ fb.timestamp }}</td>
-                    <td>{{ (fb.responses.values() | sum / 20) | round(1) }}</td>
+                    <td style="padding: 12px;">{{ fb.id }}</td>
+                    <td style="padding: 12px;">{{ fb.student_name }}</td>
+                    <td style="padding: 12px;">{{ fb.teacher_name }}</td>
+                    <td style="padding: 12px;">{{ fb.timestamp }}</td>
+                    <td style="padding: 12px;">{{ (fb.responses.values() | sum / 20) | round(1) }}</td>
+                    <td style="padding: 12px;">
+                        <button class="expand-btn" onclick="toggleDetails({{ fb.id }})" id="btn-{{ fb.id }}">Show Details</button>
+                    </td>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <tr class="details-row" id="details-{{ fb.id }}">
+                    <td colspan="6">
+                        <strong>Detailed Ratings:</strong>
+                        <div class="ratings-grid" style="margin-top: 10px;">
+                            {% for question, rating in fb.responses.items() %}
+                            <div class="rating-item">
+                                <span class="question-num">Q{{ question[1:] }}</span>
+                                <span class="rating-value">{{ rating }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <p>No feedback yet.</p>
+        <div class="no-data">
+            <h3>No feedback found</h3>
+            <p>Try changing your filter or sort option above.</p>
+        </div>
         {% endif %}
     </div>
+</div>
 </body>
 </html>

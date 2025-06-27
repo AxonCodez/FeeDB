@@ -131,12 +131,8 @@ def admin():
         if request.form.get('username') == ADMIN_USERNAME and request.form.get('password') == ADMIN_PASSWORD:
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
-        flash("Invalid admin credentials")
-    return '''<form method="POST">
-                <input name="username" placeholder="Username"><br>
-                <input name="password" placeholder="Password" type="password"><br>
-                <button type="submit">Login</button>
-              </form>'''
+        flash("Invalid admin credentials", "danger")
+    return render_template("admin_login.html")
 
 @app.route('/admin/dashboard')
 @admin_required
@@ -157,16 +153,43 @@ def admin_dashboard():
             }
     return render_template('admin.html', stats=stats)
 
+
 @app.route('/admin/feedbacks')
 @admin_required
 def all_feedbacks():
+    sort_by = request.args.get('sort', 'time')
+    filter_value = request.args.get('filter', '').strip()
+
     feedback = load_data(FEEDBACK_FILE)
     students = load_data(STUDENTS_FILE)
     teachers = load_data(TEACHERS_FILE)
+
     for fb in feedback:
         fb['student_name'] = students.get(fb['student_id'], {}).get('name', 'Unknown')
         fb['teacher_name'] = teachers.get(fb['teacher_code'], {}).get('name', 'Unknown')
-    return render_template('admin_feedbacks.html', feedbacks=feedback)
+
+    # ✅ Apply filtering based on sort category
+    if sort_by == 'student' and filter_value:
+        feedback = [f for f in feedback if f['student_id'] == filter_value]
+    elif sort_by == 'teacher' and filter_value:
+        feedback = [f for f in feedback if f['teacher_code'] == filter_value]
+
+    # ✅ Apply sorting
+    if sort_by == 'student':
+        feedback.sort(key=lambda f: f['student_name'])
+    elif sort_by == 'teacher':
+        feedback.sort(key=lambda f: f['teacher_name'])
+    else:
+        feedback.sort(key=lambda f: f['timestamp'], reverse=True)
+
+    return render_template(
+        'admin_feedbacks.html',
+        feedbacks=feedback,
+        sort_by=sort_by,
+        filter_value=filter_value,
+        student_list=students,
+        teacher_list=teachers
+    )
 
 @app.route('/admin/export')
 @admin_required

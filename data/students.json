@@ -3,12 +3,42 @@
     "password": "pass123",
     "name": "John Doe",
     "class": "10A",
-    "teachers": ["MNP", "PSN", "BLR", "ETM", "IZJ"]
+    "teachers": [
+      "MNP",
+      "PSN",
+      "BLR",
+      "ETM",
+      "IZJ"
+    ]
   },
   "5221": {
     "password": "pass456",
     "name": "Jane Smith",
     "class": "10B",
-    "teachers": ["MNP", "PSN", "BLR", "ETM"]
+    "teachers": [
+      "MNP",
+      "PSN",
+      "BLR",
+      "ETM"
+    ]
+  },
+  "5224": {
+    "name": "Akshay",
+    "password": "123",
+    "class": "12A2",
+    "teachers": [
+      "ETM",
+      "IZJ",
+      "MPK"
+    ]
+  },
+  "1234": {
+    "name": "Testing",
+    "password": "1234",
+    "class": "12A3",
+    "teachers": [
+      "IRN",
+      "EAK"
+    ]
   }
 }

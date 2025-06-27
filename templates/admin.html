@@ -7,26 +7,63 @@
 <body>
     <div class="container">
         <header>
-            <h1>Admin Dashboard</h1>
-            <nav>
-                <a href="{{ url_for('all_feedbacks') }}" class="btn btn-secondary">View All Feedbacks</a>
-                <a href="{{ url_for('export_csv') }}" class="btn">Export as CSV</a>
-                <a href="{{ url_for('manage_teachers') }}" class="btn">Manage Teachers</a>
-                <a href="{{ url_for('manage_students') }}" class="btn">Manage Students</a>
-                <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Logout</a>
-            </nav>
+            <div class="header-content">    
+                <h1>Admin Dashboard</h1>
+                <div class="header-actions">
+                    <a href="{{ url_for('all_feedbacks') }}" class="btn btn-secondary">View All Feedbacks</a>
+                    <a href="{{ url_for('export_csv') }}" class="btn btn-secondary">Export as CSV</a>
+                    <a href="{{ url_for('manage_teachers') }}" class="btn btn-secondary">Manage Teachers</a>
+                    <a href="{{ url_for('manage_students') }}" class="btn btn-secondary">Manage Students</a>
+                    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Logout</a>
+                </div>
+            </div>
         </header>
 
-        <section>
-            <h2>Teacher Statistics</h2>
-            {% for code, stat in stats.items() %}
-            <div class="card">
-                <h3>{{ stat.name }} ({{ code }}) - {{ stat.subject }}</h3>
-                <p>Total Responses: {{ stat.total_responses }}</p>
-                <p>Overall Average: {{ stat.overall_average }}</p>
-            </div>
-            {% endfor %}
-        </section>
+        <main>
+            {% if stats %}
+                <div class="admin-stats">
+                    {% for teacher_code, data in stats.items() %}
+                    <div class="teacher-stats-card">
+                        <div class="teacher-stats-header">
+                            <h3>{{ data.name }}</h3>
+                            <div class="stats-meta">
+                                <span class="subject">{{ data.subject }}</span>
+                                <span class="teacher-code">{{ teacher_code }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-summary">
+                            <div class="stat-item">
+                                <span class="stat-value">{{ data.total_responses }}</span>
+                                <span class="stat-label">Responses</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ data.overall_average }}</span>
+                                <span class="stat-label">Overall Average</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detailed-ratings">
+                            <h4>Detailed Ratings</h4>
+                            <div class="ratings-grid">
+                                {% for question, rating in data.detailed_ratings.items() %}
+                                <div class="rating-item">
+                                    <span class="question-num">Q{{ question[1:] }}</span>
+                                    <span class="rating-value">{{ "%.1f"|format(rating) }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-data">
+                    <h3>No feedback data available</h3>
+                    <p>Students haven't submitted any feedback yet.</p>
+                </div>
+            {% endif %}
+        </main>
     </div>
 </body>
 </html>
